@@ -13,6 +13,9 @@ func main() {
 	utils.DB.AutoMigrate(&models.Message{})
 	utils.DB.AutoMigrate(&models.Contact{})
 	utils.DB.AutoMigrate(&models.GroupBasic{})
+	utils.DB.AutoMigrate(&models.Community{})
+	utils.DB.AutoMigrate(&models.UserBasic{})
+	utils.DB.AutoMigrate(&models.UserBasic{})
 	/*	// Create
 		user := &models.UserBasic{}
 		user.Name = "申专"

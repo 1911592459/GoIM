@@ -28,7 +28,7 @@ func InitConfig() {
 		fmt.Println(err)
 	}
 	fmt.Println("config app:", viper.Get("app"))
-	fmt.Println("config mysql:", viper.Get("app.mysql"))
+	fmt.Println("config mysql:", viper.Get("mysql"))
 }
 func InitMysql() {
 	//自定义日志模板，打印sql语句
@@ -39,7 +39,7 @@ func InitMysql() {
 			LogLevel:      logger.Info, //级别
 			Colorful:      true,        //彩色
 		})
-	DB, _ = gorm.Open(mysql.Open(viper.GetString("app.mysql.dns")), &gorm.Config{Logger: newLogger})
+	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})
 	/*if err != nil {
 		panic("failed to connect database")
 	}*/
@@ -48,11 +48,11 @@ func InitMysql() {
 
 func InitRedis() {
 	Red = redis2.NewClient(&redis2.Options{
-		Addr: viper.GetString("app.redis.addr"),
+		Addr: viper.GetString("redis.addr"),
 		//Password:     viper.GetString("app.redis.password"),
-		DB:           viper.GetInt("app.redis.DB"),
-		PoolSize:     viper.GetInt("app.redis.poolSize"),
-		MinIdleConns: viper.GetInt("app.redis.minIdleConn"),
+		DB:           viper.GetInt("redis.DB"),
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
 	})
 	/*result, err := Red.Ping().Result()
 	if err != nil {
@@ -69,23 +69,26 @@ const (
 
 //利用redis的发布订阅功能实现消息的订阅和发布
 
-//发布消息到指定频道
+//Publish 发布消息到Redis
 func Publish(ctx context.Context, channel string, msg string) error {
-	err := Red.Publish(ctx, channel, msg).Err()
+	var err error
+	fmt.Println("Publish 。。。。", msg)
+	err = Red.Publish(ctx, channel, msg).Err()
 	if err != nil {
 		fmt.Println(err)
-		return err
 	}
 	return err
 }
 
-//使用redis订阅频道,然后获取频道里的消息
-func Subscribe(ctx context.Context, channel string) (msg string, err error) {
+//Subscribe 订阅Redis消息
+func Subscribe(ctx context.Context, channel string) (string, error) {
 	sub := Red.Subscribe(ctx, channel)
-	message, err := sub.ReceiveMessage(ctx)
+	fmt.Println("Subscribe 。。。。", ctx)
+	msg, err := sub.ReceiveMessage(ctx)
 	if err != nil {
 		fmt.Println(err)
 		return "", err
 	}
-	return message.Payload, err
+	fmt.Println("Subscribe 。。。。", msg.Payload)
+	return msg.Payload, err
 }
