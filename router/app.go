@@ -26,6 +26,7 @@ func Router() *gin.Engine {
 	r.GET("/chat", service.Chat)
 
 	r.POST("/searchFriends", service.SearchFriends)
+	//上传文件
 	r.POST("/attach/upload", service.Upload)
 	//用户
 	r.GET("/user/getUserList", service.GetUserList)
@@ -36,5 +37,16 @@ func Router() *gin.Engine {
 	//发送消息，基于redis实现的websocket消息推送
 	r.GET("/user/sendMsg", service.SendMsg)
 	r.GET("/user/sendUserMsg", service.SendUserMsg)
+
+	//添加好友
+	r.POST("/contact/addfriend", service.AddFriend)
+	//创建群
+	r.POST("/contact/createCommunity", service.CreateCommunity)
+	//群列表
+	r.POST("/contact/loadcommunity", service.LoadCommunity)
+	r.POST("/contact/joinGroup", service.JoinGroups)
+	//心跳续命 不合适  因为Node  所以前端发过来的消息再receProc里面处理
+	// r.POST("/user/heartbeat", service.Heartbeat)
+	r.POST("/user/redisMsg", service.RedisMsg)
 	return r
 }
